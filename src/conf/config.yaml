@@ -1,0 +1,424 @@
+key: debag
+
+# -------datasets (Coauthor)-------
+Coauthor: &Coauthor
+ task: transductive
+ transform: None
+ pre_transform: None
+ run: 10 
+
+CS: &CS
+ <<: *Coauthor
+ task: Transductive
+ dataset: CS
+ transform: None
+ n_feat: 6805
+ n_class: 15
+ run: 10
+
+Physics: &Physics
+ <<: *Coauthor
+ task: Transductive
+ dataset: Physics
+ transform: None
+ n_feat: 8415
+ n_class: 5
+ run: 10
+
+# -------datasets (other)-------
+
+Flickr: &Flickr
+ task: Transductive
+ dataset: Flickr
+ transform: None
+ n_feat: 500
+ n_class: 7
+ run: 10
+
+PPI: &PPI
+  task: Inductive
+  dataset: PPI
+  transform: None
+  n_feat: 50
+  n_class: 121
+  train_graph: 20
+  test_graph: 2
+  run: 10
+
+
+# -------model instance-------
+
+GAT: &GAT
+  n_head: 8
+  n_head_last: 1
+  n_layer_dropout: 0.6
+  dropout: 0.6
+  learing_late: 0.005
+  weight_decay: 0.0005
+  seed: 42
+  epochs: 10000
+  patience: 100
+  mode: original
+  num_layer: 2
+  class_num: Single
+  att_type: DP
+  norm: None 
+  layer_loss : unsupervised
+
+# -------model instance + dataset-------
+GAT_cs: &GAT_cs
+  <<: [*CS,*GAT]
+  n_hid: 16
+  path: CS_checkpoint.pt
+
+GAT_physics: &GAT_physics
+  <<: [*Physics,*GAT]
+  n_hid: 16
+  path: Physics_checkpoint.pt
+
+GAT_Flickr: &GAT_Flickr
+  <<: [*Flickr,*GAT] 
+  learing_late: 0.01 
+  n_hid: 8
+  norm: None
+  path: flickr_checkpoint.pt
+
+GAT_ppi: &GAT_ppi
+  <<: [*PPI,*GAT]
+  n_head: 4
+  n_head_last: 6
+  n_hid: 256
+  class_num: Multi
+  path: ppi_checkpoint.pt
+
+# -------model instance (exist study)-------
+GAT_cs_tuned_DP:
+ <<: [*CS,*GAT]
+ att_type: DP
+ dropout: 0.8
+ layer_loss: unsupervised
+ learing_late:  0.005
+ mode: original
+ n_hid: 8
+ norm: LayerNorm
+ weight_decay: 0.0005
+ path: cs_checkpoint.pt
+
+GAT_cs_tuned_SD:
+ <<: [*CS,*GAT]
+ att_type: SD
+ dropout: 0.8
+ layer_loss: unsupervised
+ learing_late:  0.01
+ mode: original
+ n_hid: 8
+ norm: LayerNorm
+ weight_decay: 0.001
+ path: cs_checkpoint.pt
+
+GAT_physics_tuned_DP:
+ <<: [*Physics,*GAT]
+ att_type: DP
+ dropout: 0.8
+ layer_loss: unsupervised
+ learing_late: 0.005
+ mode: original
+ n_hid: 8
+ norm: LayerNorm
+ weight_decay: 0
+ path: physics_checkpoint.pt
+
+GAT_physics_tuned_SD:
+ <<: [*Physics,*GAT]
+ att_type: SD
+ dropout: 0.6
+ layer_loss: unsupervised
+ learing_late: 0.001 
+ mode: original
+ n_hid: 8
+ norm: None
+ weight_decay: 0
+ path: physics_checkpoint.pt
+
+
+GAT_Flickr_tuned_DP:
+  <<: [*Flickr,*GAT]
+  att_type: DP
+  dropout: 0.4
+  learing_late: 0.001 
+  mode: original 
+  n_hid: 8
+  norm: LayerNorm
+  weight_decay: 0.001
+  path: flickr_checkpoint.pt
+
+GAT_Flickr_tuned_SD:
+  <<: [*Flickr,*GAT]
+  att_type: SD
+  dropout: 0.0
+  learing_late: 0.001
+  mode: original 
+  n_hid: 8
+  norm: LayerNorm
+  weight_decay: 0.001
+  path: flickr_checkpoint.pt
+
+GAT_ppi_tuned_DP:
+ <<: [*PPI,*GAT]
+ n_head: 4
+ n_head_last: 6
+ att_type: DP
+ dropout: 0.2
+ layer_loss: unsupervised
+ learing_late: 0.001
+ mode: original
+ n_hid: 128
+ norm: LayerNorm
+ weight_decay: 0.0001
+ class_num: Multi
+ path: ppi_checkpoint.pt
+
+GAT_ppi_tuned_SD:
+ <<: [*PPI,*GAT]
+ n_head: 4
+ n_head_last: 6
+ att_type: SD
+ dropout: 0.2
+ layer_loss: unsupervised
+ learing_late: 0.001 
+ mode: original
+ n_hid: 256
+ norm: LayerNorm
+ weight_decay: 0.0005
+ class_num: Multi
+ path: ppi_checkpoint.pt
+# -------model instance (our study)-------
+
+#CS
+GAT_cs_tuned_YDP_unsupervised:
+ <<: [*CS,*GAT]
+ att_type: YDP
+ dropout: 0.8
+ layer_loss: unsupervised
+ learing_late: 0.05 
+ mode: normal
+ n_hid: 15
+ norm: LayerNorm
+ weight_decay: 0
+ path: cs_checkpoint.pt
+
+GAT_cs_tuned_YSD_unsupervised:
+ <<: [*CS,*GAT]
+ att_type: YSD
+ dropout: 0.8
+ layer_loss: unsupervised
+ learing_late: 0.05 
+ mode: normal
+ n_hid: 15
+ norm: LayerNorm
+ weight_decay: 0
+ path: cs_checkpoint.pt
+
+GAT_cs_tuned_YDP_supervised:
+ <<: [*CS,*GAT]
+ att_type: YDP
+ dropout: 0.6
+ layer_loss: supervised
+ learing_late: 0.05
+ mode: normal
+ n_hid: 15
+ norm: LayerNorm
+ weight_decay: 0.0001
+ path: cs_checkpoint.pt
+
+GAT_cs_tuned_YSD_supervised:
+ <<: [*CS,*GAT]
+ att_type: YSD
+ dropout: 0.8
+ layer_loss: supervised
+ learing_late: 0.05
+ mode: normal
+ n_hid: 15
+ norm: LayerNorm
+ weight_decay: 0.0001
+ path: cs_checkpoint.pt
+
+#Physics
+GAT_physics_tuned_YDP_unsupervised:
+ <<: [*Physics,*GAT]
+ att_type: YDP
+ dropout: 0.8 
+ layer_loss: unsupervised
+ learing_late: 0.05 
+ mode: normal
+ n_hid: 5
+ norm: LayerNorm 
+ weight_decay: 0 
+ path: physics_checkpoint.pt
+
+GAT_physics_tuned_YSD_unsupervised:
+ <<: [*Physics,*GAT]
+ att_type: YSD
+ dropout: 0.2 
+ layer_loss: unsupervised
+ learing_late: 0.01  
+ mode: normal
+ n_hid: 5
+ norm: None 
+ weight_decay: 0.0005 
+ path: physics_checkpoint.pt
+
+GAT_physics_tuned_YDP_supervised:
+ <<: [*Physics,*GAT]
+ att_type: YDP
+ dropout: 0.6
+ layer_loss: supervised
+ learing_late: 0.05
+ mode: normal
+ n_hid: 5
+ norm: LayerNorm
+ weight_decay: 0
+ path: physics_checkpoint.pt
+
+GAT_physics_tuned_YSD_supervised:
+ <<: [*Physics,*GAT]
+ att_type: YSD
+ dropout: 0.6
+ layer_loss: supervised
+ learing_late: 0.05 
+ mode: normal
+ n_hid: 5
+ norm: LayerNorm
+ weight_decay: 0
+ path: physics_checkpoint.pt
+
+#Flickr
+GAT_Flickr_tuned_YDP_unsupervised:
+ <<: [*Flickr,*GAT]
+ att_type: YDP
+ dropout: 0.0
+ layer_loss: unsupervised
+ learing_late: 0.01 
+ mode: normal
+ n_hid: 7
+ norm: BatchNorm1d
+ weight_decay: 0
+ path: flickr_checkpoint.pt
+
+GAT_Flickr_tuned_YSD_unsupervised:
+ <<: [*Flickr,*GAT]
+ att_type: YSD
+ dropout: 0.4
+ layer_loss: unsupervised
+ learing_late: 0.01 
+ mode: normal
+ n_hid: 7
+ norm: BatchNorm1d
+ weight_decay: 0
+ path: flickr_checkpoint.pt
+ 
+GAT_Flickr_tuned_YDP_supervised:
+ <<: [*Flickr,*GAT]
+ att_type: YDP
+ dropout: 0.0
+ layer_loss: supervised
+ learing_late: 0.01
+ mode: normal
+ n_hid: 7
+ norm: BatchNorm1d
+ weight_decay: 0
+ path: flickr_checkpoint.pt
+  
+GAT_Flickr_tuned_YSD_supervised:
+ <<: [*Flickr,*GAT]
+ att_type: YSD
+ dropout: 0.0
+ layer_loss: supervised
+ learing_late: 0.005 
+ mode: normal
+ n_hid: 7
+ norm: BatchNorm1d
+ weight_decay: 0
+ path: flickr_checkpoint.pt
+
+#ppi
+GAT_ppi_tuned_YDP_unsupervised:
+ <<: [*PPI,*GAT]
+ n_head: 4
+ n_head_last: 6
+ att_type: YDP
+ dropout: 0.8
+ layer_loss: unsupervised
+ learing_late: 0.001 
+ mode: normal
+ n_hid: 121
+ norm: BatchNorm1d
+ weight_decay: 0.0001
+ class_num: Multi
+ path: ppi_checkpoint.pt
+
+GAT_ppi_tuned_YSD_unsupervised:
+ <<: [*PPI,*GAT]
+ n_head: 4
+ n_head_last: 6
+ att_type: YSD
+ dropout: 0.0
+ layer_loss: unsupervised
+ learing_late: 0.005 
+ mode: normal
+ n_hid: 121
+ norm: BatchNorm1d
+ weight_decay: 0.0005
+ class_num: Multi
+ path: ppi_checkpoint.pt
+
+GAT_ppi_tuned_YDP_supervised:
+ <<: [*PPI,*GAT]
+ n_head: 4
+ n_head_last: 6
+ att_type: YDP
+ dropout: 0.6
+ layer_loss: supervised
+ learing_late: 0.001 
+ mode: normal
+ n_hid: 121
+ norm: LayerNorm
+ weight_decay: 0
+ class_num: Multi
+ path: ppi_checkpoint.pt
+
+GAT_ppi_tuned_YSD_supervised:
+ <<: [*PPI,*GAT]
+ n_head: 4
+ n_head_last: 6
+ att_type: YSD
+ dropout: 0.4
+ layer_loss: supervised
+ learing_late: 0.05 
+ mode: normal
+ n_hid: 121
+ norm: LayerNorm
+ weight_decay: 0.0001
+ class_num: Multi
+ path: ppi_checkpoint.pt
+
+#debag
+debag:
+ <<: *GAT_cs
+ layer_loss: unsupervised
+ att_type: YDP
+ n_hid: 15
+ mode: normal
+ run: 10
+
+
+defaults:
+  - override hydra/sweeper: optuna # [basic, optuna]
+
+hydra:
+  sweeper:
+    sampler:
+      _target_: optuna.samplers.TPESampler
+    direction: maximize
+    n_jobs: 1
+    n_trials: 70
