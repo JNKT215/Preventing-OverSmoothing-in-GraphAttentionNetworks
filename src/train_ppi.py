@@ -19,7 +19,7 @@ def train(loader,model,optimizer,device):
             data = data.to(device)
             optimizer.zero_grad()
             out,hs = model(data.x, data.edge_index)
-            loss = loss_op(out, data.y)/(len(hs)+1)
+            loss = loss_op(out, data.y)
             loss +=get_y_preds_loss(hs,data)
             total_loss += loss.item() * data.num_graphs
             loss.backward()
@@ -58,7 +58,7 @@ def get_y_preds_loss(hs,data):
     y_pred_loss = torch.tensor(0, dtype=torch.float32,device=hs[0].device)
     for h in hs:
         h = h.mean(dim=1)
-        y_pred_loss += loss_op(h,data.y)/(len(hs)+1)
+        y_pred_loss += loss_op(h,data.y)
     return y_pred_loss
 
 def run(loader,model,optimizer,device,cfg):
